@@ -14,6 +14,7 @@ import com.capyreader.app.common.AndroidLogging
 import com.capyreader.app.preferences.AppPreferences
 import com.capyreader.app.ui.widget.HeadlinesWidgetReceiver
 import com.capyreader.app.ui.widget.SpotlightWidgetReceiver
+import com.capyreader.app.ui.widget.UnreadCountWidgetReceiver
 import com.google.android.material.color.DynamicColors
 import okhttp3.OkHttpClient
 import com.jocmp.capy.common.launchUI
@@ -70,6 +71,7 @@ class MainApplication : Application(), SingletonImageLoader.Factory {
                 try {
                     manager.setWidgetPreviews(HeadlinesWidgetReceiver::class)
                     manager.setWidgetPreviews(SpotlightWidgetReceiver::class)
+                    manager.setWidgetPreviews(UnreadCountWidgetReceiver::class)
                 } catch (e: IllegalArgumentException) {
                     CapyLog.error("widget_preview", e)
                 }

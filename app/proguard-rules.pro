@@ -42,3 +42,8 @@
 -keep class com.jocmp.** { *; }
 
 -dontwarn com.jocmp.**
+
+# Jetpack Glance widget receivers and action callbacks
+-keep class * extends androidx.glance.appwidget.GlanceAppWidgetReceiver
+-keep class * implements androidx.glance.appwidget.action.ActionCallback { public <init>(); }
+-keep class * extends androidx.glance.appwidget.GlanceAppWidget
