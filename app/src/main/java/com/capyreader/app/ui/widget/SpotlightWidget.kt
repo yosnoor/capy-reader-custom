@@ -28,13 +28,10 @@ import coil3.request.ImageRequest
 import coil3.request.allowHardware
 import coil3.toBitmap
 import com.capyreader.app.R
-import com.capyreader.app.preferences.AppPreferences
-import com.jocmp.capy.Account
+import com.jocmp.capy.logging.CapyLog
 import com.jocmp.capy.Article
 import com.jocmp.capy.latestArticles
 import kotlinx.coroutines.flow.first
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import java.io.File
 
 class SpotlightWidget : GlanceAppWidget() {
@@ -42,20 +39,26 @@ class SpotlightWidget : GlanceAppWidget() {
         setOf(SMALL_SIZE, WIDE_SIZE)
     )
 
-    private val viewModel by lazy { SpotlightViewModel() }
+    private val repository = WidgetRepository()
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val entries = if (viewModel.isLoggedIn) {
-            val articles = viewModel.fetchArticles()
-            cacheImages(context, articles)
-            articles.map { it.toSpotlightEntry() }
+        val account = repository.account
+        val entries = if (repository.isLoggedIn && account != null) {
+            try {
+                val articles = account.latestArticles(limit = 10).first()
+                cacheImages(context, articles)
+                articles.map { it.toSpotlightEntry() }
+            } catch (e: Exception) {
+                CapyLog.error("widget_spotlight_fetch", e)
+                emptyList()
+            }
         } else {
             emptyList()
         }
 
         provideContent {
             GlanceTheme {
-                if (!viewModel.isLoggedIn) {
+                if (!repository.isLoggedIn || account == null) {
                     LoggedOutContent()
                 } else {
                     Content(entries)
@@ -156,7 +159,7 @@ class SpotlightWidget : GlanceAppWidget() {
             try {
                 val request = ImageRequest.Builder(context)
                     .data(url)
-                    .size(720)
+                    .size(480)
                     .allowHardware(false)
                     .build()
                 val result = context.imageLoader.execute(request)
@@ -172,24 +175,20 @@ class SpotlightWidget : GlanceAppWidget() {
         fun readCachedImage(context: Context, id: String): Bitmap? {
             val file = imageFile(context, id)
             if (!file.exists()) return null
-            return BitmapFactory.decodeFile(file.absolutePath)
+            return try {
+                val options = BitmapFactory.Options().apply {
+                    inPreferredConfig = Bitmap.Config.RGB_565
+                }
+                BitmapFactory.decodeFile(file.absolutePath, options)
+            } catch (_: Exception) {
+                null
+            }
         }
 
         private fun clearImageCache(context: Context) {
             imageDir(context).listFiles()?.forEach { it.delete() }
         }
     }
-}
-
-private class SpotlightViewModel : KoinComponent {
-    private val appPreferences by inject<AppPreferences>()
-    private val account by inject<Account>()
-
-    val isLoggedIn
-        get() = appPreferences.isLoggedIn
-
-    suspend fun fetchArticles() =
-        account.latestArticles(limit = 10).first()
 }
 
 private fun Article.toSpotlightEntry() = SpotlightEntry(

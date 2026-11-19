@@ -7,5 +7,6 @@ object WidgetUpdater {
     suspend fun update(context: Context) {
         HeadlinesWidget().updateAll(context)
         SpotlightWidget().updateAll(context)
+        UnreadCountWidget().updateAll(context)
     }
 }

@@ -99,7 +99,7 @@ fun HeadlinesLayout(articles: List<Article>) {
     }
 }
 
-private fun Context.openUnread() =
+internal fun Context.openUnread() =
     actionStartActivity(
         Intent(
             Intent.ACTION_VIEW,

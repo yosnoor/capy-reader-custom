@@ -19,6 +19,7 @@ import com.capyreader.app.ui.DeepLink
 import com.capyreader.app.ui.Route
 import com.capyreader.app.ui.articles.detail.LocalPageTurnKeys
 import com.capyreader.app.ui.articles.detail.PageTurnKeys
+import com.capyreader.app.ui.widget.WidgetUpdater
 import com.jocmp.capy.ArticleStatus
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -59,6 +60,11 @@ class MainActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         motionDurationScale.refreshSystemScale(contentResolver)
+
+        // Re-push widget views in case the launcher attached after the last update.
+        lifecycleScope.launch {
+            WidgetUpdater.update(applicationContext)
+        }
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {

@@ -17,18 +17,14 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import com.capyreader.app.R
-import com.capyreader.app.preferences.AppPreferences
-import com.jocmp.capy.Account
 import com.jocmp.capy.Article
 import com.jocmp.capy.latestArticles
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import java.net.URL
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 class HeadlinesWidget : GlanceAppWidget() {
-    private val viewModel by lazy { HeadlinesViewModel() }
+    private val repository = WidgetRepository()
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
@@ -48,8 +44,9 @@ class HeadlinesWidget : GlanceAppWidget() {
 
     @Composable
     private fun Content() {
-        if (viewModel.isLoggedIn) {
-            val articles by viewModel.articles.collectAsState(emptyList())
+        val account = repository.account
+        if (repository.isLoggedIn && account != null) {
+            val articles by account.latestArticles().collectAsState(emptyList())
 
             HeadlinesLayout(articles)
         } else {
@@ -68,24 +65,6 @@ class HeadlinesWidget : GlanceAppWidget() {
             }
         }
     }
-}
-
-class HeadlinesViewModel : KoinComponent {
-    private val appPreferences by inject<AppPreferences>()
-    private val repository by lazy { ArticlesRepository() }
-
-    val isLoggedIn
-        get() = appPreferences.isLoggedIn
-
-    val articles
-        get() = repository.articles
-}
-
-private class ArticlesRepository : KoinComponent {
-    private val account by inject<Account>()
-
-    val articles
-        get() = account.latestArticles()
 }
 
 fun sampleArticles() =
