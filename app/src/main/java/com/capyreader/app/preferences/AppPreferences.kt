@@ -134,7 +134,7 @@ class AppPreferences(context: Context) {
             get() = preferenceStore.getBoolean("article_enable_e_ink_scrollbar", false)
 
         val enablePageTurnKeys: Preference<Boolean>
-            get() = preferenceStore.getBoolean("article_enable_page_turn_keys", false)
+            get() = preferenceStore.getBoolean("article_enable_page_turn_keys", true)
 
         val keepScreenOn: Preference<Boolean>
             get() = preferenceStore.getBoolean("article_keep_screen_on", false)

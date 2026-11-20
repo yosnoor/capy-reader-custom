@@ -97,9 +97,7 @@ fun ArticleDetailScreen(
         LocalConnectivity provides connectivity,
         LocalLinkOpener provides provideLinkOpener(context),
     ) {
-        val current = article
-
-        if (current == null) {
+        if (article == null) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
@@ -110,7 +108,7 @@ fun ArticleDetailScreen(
             }
         } else {
             ArticleView(
-                article = current,
+                article = article,
                 previousArticleID = viewModel.previousArticleID,
                 nextArticleID = viewModel.nextArticleID,
                 onBackPressed = onBackPressed,
@@ -119,7 +117,7 @@ fun ArticleDetailScreen(
                 canSaveExternally = canSaveExternally,
                 onDeletePage = {
                     onBackPressed()
-                    viewModel.deletePage(current.id)
+                    viewModel.deletePage(article.id)
                 },
                 contentRevision = viewModel.contentRevision,
                 flattened = viewModel.flattenedArticle,

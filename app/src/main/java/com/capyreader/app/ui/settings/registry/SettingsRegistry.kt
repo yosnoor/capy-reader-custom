@@ -126,6 +126,7 @@ object SettingsRegistry {
                         Setting.READER_SWIPE_DOWN,
                         Setting.READER_SWIPE_UP,
                         Setting.HORIZONTAL_PAGINATION,
+                        Setting.PAGE_TURN_KEYS,
                     ),
                 ),
             )
@@ -146,7 +147,6 @@ object SettingsRegistry {
                         Setting.REDUCE_MOTION,
                         Setting.TAP_TO_PAGE,
                         Setting.E_INK_SCROLLBAR,
-                        Setting.PAGE_TURN_KEYS,
                         Setting.KEEP_SCREEN_ON,
                     ),
                 ),

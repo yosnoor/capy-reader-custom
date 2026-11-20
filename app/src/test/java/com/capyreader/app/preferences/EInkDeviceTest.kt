@@ -71,7 +71,7 @@ class EInkDeviceTest {
         EInkDevice.applyDefaults(appPreferences, isEInk = false)
 
         assertFalse(appPreferences.reduceMotion.get())
-        assertFalse(appPreferences.readerOptions.enablePageTurnKeys.get())
+        assertTrue(appPreferences.readerOptions.enablePageTurnKeys.get())
         assertFalse(appPreferences.eInkDefaultsApplied.get())
         assertFalse(appPreferences.appTheme.isSet())
     }
