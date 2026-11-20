@@ -1,5 +1,6 @@
 package com.capyreader.app
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
@@ -67,6 +68,14 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        lifecycleScope.launch {
+            WidgetUpdater.update(applicationContext)
+        }
+    }
+
+    @SuppressLint("RestrictedApi")
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         return pageTurnKeys.interceptKey(event) || super.dispatchKeyEvent(event)
     }

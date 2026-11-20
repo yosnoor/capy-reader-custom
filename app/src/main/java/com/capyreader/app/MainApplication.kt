@@ -1,5 +1,6 @@
 package com.capyreader.app
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.os.Build
 import androidx.glance.appwidget.GlanceAppWidgetManager
@@ -15,11 +16,13 @@ import com.capyreader.app.preferences.AppPreferences
 import com.capyreader.app.ui.widget.HeadlinesWidgetReceiver
 import com.capyreader.app.ui.widget.SpotlightWidgetReceiver
 import com.capyreader.app.ui.widget.UnreadCountWidgetReceiver
+import com.capyreader.app.ui.widget.WidgetUpdater
 import com.google.android.material.color.DynamicColors
 import okhttp3.OkHttpClient
 import com.jocmp.capy.common.launchUI
 import com.jocmp.capy.logging.CapyLog
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.workmanager.koin.workManagerFactory
@@ -39,6 +42,14 @@ class MainApplication : Application(), SingletonImageLoader.Factory {
 
         if (get<AppPreferences>().isLoggedIn) {
             loadAccountModules()
+        }
+
+        MainScope().launch {
+            try {
+                WidgetUpdater.update(this@MainApplication)
+            } catch (e: Exception) {
+                CapyLog.error("widget_update", e)
+            }
         }
 
         loadWidgetPreview()
@@ -63,6 +74,7 @@ class MainApplication : Application(), SingletonImageLoader.Factory {
      * private/work space), which would otherwise crash the app on launch.
      * See https://issuetracker.google.com/issues/488125748
      */
+    @SuppressLint("CheckResult")
     private fun loadWidgetPreview() {
         MainScope().launchUI {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
