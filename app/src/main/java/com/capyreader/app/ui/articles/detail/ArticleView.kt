@@ -82,7 +82,7 @@ fun ArticleView(
     isFullscreen: Boolean = false,
     onToggleFullscreen: () -> Unit = {},
     articlePosition: Pair<Long, Long>? = null,
-    appPreferences: AppPreferences = koinInject()
+    appPreferences: AppPreferences = koinInject(),
 ) {
     val filter by appPreferences.filter.collectChangesWithDefault()
     val enableHorizontalPager by appPreferences.readerOptions.enableHorizontaPagination.collectChangesWithDefault()

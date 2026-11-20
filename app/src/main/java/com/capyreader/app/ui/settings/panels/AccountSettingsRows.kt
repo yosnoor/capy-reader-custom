@@ -41,9 +41,10 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AccountNameRow(viewModel: AccountSettingsViewModel = koinViewModel()) {
     ListItem(
-        headlineContent = { Text(stringResource(viewModel.accountSource.titleKey)) },
         supportingContent = { Text(viewModel.accountName) },
-    )
+    ) {
+        Text(stringResource(viewModel.accountSource.titleKey))
+    }
 }
 
 @Composable
@@ -53,7 +54,6 @@ fun AccountServerRow(viewModel: AccountSettingsViewModel = koinViewModel()) {
     }
 
     ListItem(
-        headlineContent = { Text(stringResource(R.string.settings_section_account_server)) },
         supportingContent = {
             Text(
                 text = viewModel.accountURL,
@@ -61,7 +61,9 @@ fun AccountServerRow(viewModel: AccountSettingsViewModel = koinViewModel()) {
                 overflow = TextOverflow.Ellipsis,
             )
         },
-    )
+    ) {
+        Text(stringResource(R.string.settings_section_account_server))
+    }
 }
 
 @Composable
@@ -88,9 +90,10 @@ fun LastRefreshedRow(viewModel: AccountSettingsViewModel = koinViewModel()) {
     val lastRefreshedAt by viewModel.lastRefreshedAt.collectAsState()
 
     ListItem(
-        headlineContent = { Text(stringResource(R.string.settings_last_refreshed)) },
         supportingContent = { Text(lastRefreshed(lastRefreshedAt)) },
-    )
+    ) {
+        Text(stringResource(R.string.settings_last_refreshed))
+    }
 }
 
 @Composable

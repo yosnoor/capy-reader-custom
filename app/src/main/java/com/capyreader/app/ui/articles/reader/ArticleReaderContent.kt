@@ -78,7 +78,7 @@ fun ArticleReaderContent(
                 HorizontalDivider()
 
                 ProvideTextStyle(
-                    readerStyle.bodyTextStyle.copy(color = MaterialTheme.colorScheme.onSurface)
+                    readerStyle.bodyTextStyle.copy(color = MaterialTheme.colorScheme.onSurface),
                 ) {
                     ArticleBody(
                         article = flattened,

@@ -77,7 +77,6 @@ fun ArticleReader(
     currentAudioUrl: String? = null,
     isAudioPlaying: Boolean = false,
     isAudioBuffering: Boolean = false,
-    appPreferences: AppPreferences = koinInject(),
 ) {
     val (shareLink, setShareLink) = rememberSaveableShareLink()
     val (shareImageUrl, setImageUrl) = rememberSaveable { mutableStateOf<String?>(null) }
