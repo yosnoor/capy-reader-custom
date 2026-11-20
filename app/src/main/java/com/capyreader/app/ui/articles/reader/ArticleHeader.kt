@@ -50,7 +50,7 @@ fun ArticleHeader(
                 text = title,
                 style = readerStyle.titleTextStyle.copy(
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.primary,
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -71,7 +71,8 @@ fun ArticleHeader(
             Text(
                 text = feedName,
                 style = bylineTextStyle,
-                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
             )
         }
     }

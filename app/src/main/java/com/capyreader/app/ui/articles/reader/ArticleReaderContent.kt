@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Card
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
@@ -74,6 +75,8 @@ fun ArticleReaderContent(
             }
 
             if (flattened != null) {
+                HorizontalDivider()
+
                 ProvideTextStyle(
                     readerStyle.bodyTextStyle.copy(color = MaterialTheme.colorScheme.onSurface)
                 ) {
