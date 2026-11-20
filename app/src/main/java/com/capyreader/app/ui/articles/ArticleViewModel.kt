@@ -1,5 +1,6 @@
 package com.capyreader.app.ui.articles
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import androidx.compose.runtime.getValue
@@ -28,7 +29,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * Backs a single [com.capyreader.app.ui.Route.ArticleDetail] entry. The [articleID] arrives as a
+ * Backs a single [com.capyreader.app.ui.Route.ArticleDetail] entry. The [currentArticleID] arrives as a
  * persistent reader surface. [load] swaps the displayed article (the entry uses a stable
  * contentKey so this ViewModel survives next/previous navigation), and it owns its own
  * full-content fetch/parse lifecycle.
@@ -60,6 +61,9 @@ class ArticleViewModel(
         private set
 
     var nextArticleID by mutableStateOf<String?>(null)
+        private set
+
+    var articlePosition by mutableStateOf<Pair<Long, Long>?>(null)
         private set
 
     val canSaveArticleExternally = account.canSaveArticleExternally.stateIn(viewModelScope)
@@ -98,15 +102,23 @@ class ArticleViewModel(
 
         viewModelScope.launchIO {
             val filter = appPreferences.filter.get()
+            val sortOrder = appPreferences.articleListOptions.getSortOrder(filter).get()
             val (previous, next) = account.neighbors(
                 filter = filter,
-                sortOrder = appPreferences.articleListOptions.getSortOrder(filter).get(),
+                sortOrder = sortOrder,
                 since = articleCutoff.value,
                 articleID = articleID,
                 query = searchQuery,
             )
             previousArticleID = previous
             nextArticleID = next
+            articlePosition = account.position(
+                filter = filter,
+                sortOrder = sortOrder,
+                since = articleCutoff.value,
+                articleID = articleID,
+                query = searchQuery,
+            )
         }
     }
 
@@ -284,6 +296,7 @@ class ArticleViewModel(
         account.removeStar(articleID)
     }
 
+    @SuppressLint("EmptySuperCall")
     override fun onCleared() {
         super.onCleared()
         // The reader left the back stack: end the session so the next open starts a fresh cutoff

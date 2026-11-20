@@ -382,6 +382,22 @@ data class Account(
         )
     }
 
+    suspend fun position(
+        filter: ArticleFilter,
+        sortOrder: SortOrder,
+        since: java.time.OffsetDateTime?,
+        articleID: String,
+        query: String? = null,
+    ): Pair<Long, Long>? = withIOContext {
+        articleRecords.position(
+            filter = filter,
+            sortOrder = sortOrder,
+            since = since,
+            articleID = articleID,
+            query = query,
+        )
+    }
+
     fun countUnread(
         filter: ArticleFilter,
         query: String?,
@@ -413,7 +429,7 @@ data class Account(
                     val changesetIDs = articleRecords.filterUnreadStatuses(batchIDs)
 
                     articleRecords.markAllRead(changesetIDs, lastReadAt = lastReadAt)
-                    queueStatuses(changesetIDs, SyncStatus.Key.READ, flag = true)
+                    SyncStatus.Key.READ.queueStatuses(changesetIDs, flag = true)
                 }
             }
         }
@@ -441,9 +457,9 @@ data class Account(
         syncStatusRecords.insertStatus(articleID = articleID, key = key, flag = flag)
     }
 
-    private fun queueStatuses(articleIDs: List<String>, key: SyncStatus.Key, flag: Boolean) {
+    private fun SyncStatus.Key.queueStatuses(articleIDs: List<String>, flag: Boolean) {
         if (source == Source.LOCAL || articleIDs.isEmpty()) return
-        syncStatusRecords.insertStatuses(articleIDs = articleIDs, key = key, flag = flag)
+        syncStatusRecords.insertStatuses(articleIDs = articleIDs, key = this, flag = flag)
     }
 
     suspend fun fetchFullContent(article: Article): Result<String> {

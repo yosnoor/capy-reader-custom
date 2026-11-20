@@ -108,6 +108,32 @@ class ByArticleStatus(private val database: Database) {
         return previous to next
     }
 
+    fun countBefore(
+        status: ArticleStatus,
+        sortOrder: SortOrder,
+        since: OffsetDateTime?,
+        articleID: String,
+        publishedSince: Long? = null,
+        query: String? = null,
+    ): Long {
+        val (read, starred) = status.toStatusPair
+        val newestFirst = isNewestFirst(sortOrder)
+        val queries = database.articlesByStatusQueries
+
+        val findCount =
+            if (newestFirst) queries::countBeforeNewestFirst else queries::countBeforeOldestFirst
+
+        return findCount(
+            articleID,
+            read,
+            mapLastRead(read, since),
+            starred,
+            mapLastUnstarred(starred, since),
+            publishedSince,
+            query,
+        ).executeAsOne()
+    }
+
     fun maxArrivedAt(): Long? {
         return database.articlesQueries.lastUpdatedAt().executeAsOne().MAX
     }

@@ -31,6 +31,8 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.keepScreenOn
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.capyreader.app.common.AudioEnclosure
@@ -48,7 +50,12 @@ import com.capyreader.app.ui.articles.reader.PageDirection
 import com.capyreader.app.ui.collectChangesWithDefault
 import com.capyreader.app.ui.components.pullrefresh.SwipeRefresh
 import com.capyreader.app.ui.components.LocalSnackbarHost
+import com.capyreader.app.ui.fixtures.ArticleSample
+import com.capyreader.app.ui.fixtures.PreviewKoinApplication
+import com.capyreader.app.ui.theme.CapyTheme
 import com.jocmp.capy.Article
+import com.jocmp.capy.ArticleFilter
+import com.jocmp.capy.ArticleStatus
 import com.jocmp.mallet.LinearArticle
 import org.koin.compose.koinInject
 
@@ -74,8 +81,10 @@ fun ArticleView(
     isAudioBuffering: Boolean = false,
     isFullscreen: Boolean = false,
     onToggleFullscreen: () -> Unit = {},
+    articlePosition: Pair<Long, Long>? = null,
     appPreferences: AppPreferences = koinInject()
 ) {
+    val filter by appPreferences.filter.collectChangesWithDefault()
     val enableHorizontalPager by appPreferences.readerOptions.enableHorizontaPagination.collectChangesWithDefault()
     val fullContent = LocalFullContent.current
     val openLink = articleOpenLink(article)
@@ -227,6 +236,12 @@ fun ArticleView(
                 isFullscreen = isFullscreen,
                 onToggleFullscreen = onToggleFullscreen,
                 onClose = onBackPressed,
+                filter = if (filter.status == ArticleStatus.UNREAD) {
+                    ArticleFilter.Articles(ArticleStatus.UNREAD)
+                } else {
+                    ArticleFilter.Articles(ArticleStatus.ALL)
+                },
+                positionText = articlePosition?.let { "${it.first}/${it.second}" },
             )
 
             ArticleBottomBar(
@@ -347,4 +362,25 @@ private fun rememberContentPadding(pinToolbars: Boolean): PaddingValues {
         PaddingValues()
     }
 }
+
+@Preview
+@Composable
+private fun ArticleViewPreview(
+    @PreviewParameter(ArticleSample::class) article: Article,
+) {
+    PreviewKoinApplication {
+        CapyTheme {
+            ArticleView(
+                article = article,
+                onBackPressed = {},
+                onToggleRead = {},
+                onToggleStar = {},
+                onSelectArticle = {},
+                onSelectMedia = {},
+                onFullscreenVideo = {},
+            )
+        }
+    }
+}
+
 

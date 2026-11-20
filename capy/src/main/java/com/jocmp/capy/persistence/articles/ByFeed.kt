@@ -125,6 +125,35 @@ class ByFeed(private val database: Database) {
         return previous to next
     }
 
+    fun countBefore(
+        feedIDs: List<String>,
+        status: ArticleStatus,
+        sortOrder: SortOrder,
+        since: OffsetDateTime?,
+        priority: FeedPriority,
+        articleID: String,
+        query: String? = null,
+    ): Long {
+        val (read, starred) = status.toStatusPair
+        val newestFirst = isNewestFirst(sortOrder)
+        val queries = database.articlesByFeedQueries
+
+        val findCount =
+            if (newestFirst) queries::countBeforeNewestFirst else queries::countBeforeOldestFirst
+
+        return findCount(
+            articleID,
+            feedIDs,
+            read,
+            mapLastRead(read, since),
+            starred,
+            mapLastUnstarred(starred, since),
+            null,
+            priority.inclusivePriorities,
+            query,
+        ).executeAsOne()
+    }
+
     fun count(
         feedIDs: List<String>,
         status: ArticleStatus,

@@ -74,6 +74,7 @@ fun ArticleTopBar(
     allFolders: List<Folder> = emptyList(),
     allSavedSearches: List<SavedSearch> = emptyList(),
     count: Long? = null,
+    positionText: String? = null,
 ) {
     val containerColor = MaterialTheme.colorScheme.surface
     val labelsActions = LocalLabelsActions.current
@@ -118,6 +119,7 @@ fun ArticleTopBar(
                             allFolders = allFolders,
                             allSavedSearches = allSavedSearches,
                             count = count,
+                            positionText = positionText,
                             onRequestJumpToTop = {},
                         )
                     },
@@ -231,7 +233,6 @@ fun ArticleTopBar(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun ArticleTopBarPreview() {

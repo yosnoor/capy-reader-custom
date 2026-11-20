@@ -126,10 +126,36 @@ class ByToday(private val database: Database) {
         return previous to next
     }
 
+    fun countBefore(
+        status: ArticleStatus,
+        sortOrder: SortOrder,
+        since: OffsetDateTime?,
+        articleID: String,
+        query: String? = null,
+    ): Long {
+        val (read, starred) = status.toStatusPair
+        val newestFirst = isNewestFirst(sortOrder)
+        val queries = database.articlesByStatusQueries
+        val publishedSince = mapTodayStartDate(since)
+
+        val findCount =
+            if (newestFirst) queries::countBeforeNewestFirst else queries::countBeforeOldestFirst
+
+        return findCount(
+            articleID,
+            read,
+            mapLastRead(read, since),
+            starred,
+            mapLastUnstarred(starred, since),
+            publishedSince,
+            query,
+        ).executeAsOne()
+    }
+
     /**
      * Anchor the 24h window on the session [since] (the list snapshot / reader cutoff) rather than
      * the current instant, so the list pager and the reader's neighbor query — which run at
-     * different times — agree on the Today window instead of drifting apart near the boundary.
+     * different times — agree on the Today window instead of drifting apart near boundary.
      */
     private fun mapTodayStartDate(since: OffsetDateTime?): Long {
         return (since ?: OffsetDateTime.now()).minusHours(24).toEpochSecond()

@@ -41,7 +41,7 @@ class ArticleRecords(
     }
 
     /**
-     * Creates a new status record. On conflict it does nothing.
+     * Creates a new status record. On conflict, it does nothing.
      */
     fun createStatus(articleID: String, updatedAt: ZonedDateTime, read: Boolean) {
         val updatedAtSeconds = updatedAt.toEpochSecond()
@@ -64,7 +64,7 @@ class ArticleRecords(
     }
 
     /**
-     * Upserts a record status. On conflict it overwrites "read" metadata.
+     * Upserts a record status. On conflict, it overwrites "read" metadata.
      */
     fun updateStatus(articleID: String, updatedAt: ZonedDateTime, read: Boolean, starred: Boolean) {
         val updatedAtSeconds = updatedAt.toEpochSecond()
@@ -377,6 +377,72 @@ class ArticleRecords(
                 query = query,
             )
         }
+    }
+
+    fun position(
+        filter: ArticleFilter,
+        sortOrder: SortOrder,
+        since: java.time.OffsetDateTime?,
+        articleID: String,
+        query: String? = null,
+    ): Pair<Long, Long>? {
+        val countBefore = when (filter) {
+            is ArticleFilter.Articles -> byStatus.countBefore(
+                filter.articleStatus,
+                sortOrder = sortOrder,
+                since = since,
+                articleID = articleID,
+                query = query,
+            )
+
+            is ArticleFilter.Feeds -> byFeed.countBefore(
+                feedIDs = listOf(filter.feedID),
+                status = filter.feedStatus,
+                sortOrder = sortOrder,
+                since = since,
+                priority = FeedPriority.FEED,
+                articleID = articleID,
+                query = query,
+            )
+
+            is ArticleFilter.Folders -> byFeed.countBefore(
+                feedIDs = folderFeedIDs(filter),
+                status = filter.status,
+                sortOrder = sortOrder,
+                since = since,
+                priority = FeedPriority.CATEGORY,
+                articleID = articleID,
+                query = query,
+            )
+
+            is ArticleFilter.SavedSearches -> bySavedSearch.countBefore(
+                savedSearchID = filter.savedSearchID,
+                status = filter.status,
+                sortOrder = sortOrder,
+                since = since,
+                articleID = articleID,
+                query = query,
+            )
+
+            is ArticleFilter.Today -> byToday.countBefore(
+                status = filter.status,
+                sortOrder = sortOrder,
+                since = since,
+                articleID = articleID,
+                query = query,
+            )
+        }
+
+        val total = when (filter) {
+            is ArticleFilter.Articles -> byStatus.count(filter.articleStatus, query, since).executeAsOne()
+            is ArticleFilter.Feeds -> byFeed.count(listOf(filter.feedID), filter.feedStatus, query, since, FeedPriority.FEED).executeAsOne()
+            is ArticleFilter.Folders -> byFeed.count(folderFeedIDs(filter), filter.status, query, since, FeedPriority.CATEGORY).executeAsOne()
+            is ArticleFilter.SavedSearches -> bySavedSearch.count(filter.savedSearchID, filter.status, query, since).executeAsOne()
+            is ArticleFilter.Today -> byToday.count(filter.status, query, since).executeAsOne()
+        }
+
+        if (total == 0L) return null
+        return (countBefore + 1) to total
     }
 
     fun unreadArticleIDs(

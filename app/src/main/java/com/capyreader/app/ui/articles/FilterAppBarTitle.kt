@@ -32,6 +32,7 @@ fun FilterAppBarTitle(
     allFolders: List<Folder>,
     allSavedSearches: List<SavedSearch>,
     count: Long? = null,
+    positionText: String? = null,
     onRequestJumpToTop: () -> Unit,
 ) {
     val text = when (filter) {
@@ -71,7 +72,15 @@ fun FilterAppBarTitle(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f, fill = false)
             )
-            if (count != null) {
+            if (positionText != null) {
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = positionText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1
+                )
+            } else if (count != null) {
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = count.toString(),

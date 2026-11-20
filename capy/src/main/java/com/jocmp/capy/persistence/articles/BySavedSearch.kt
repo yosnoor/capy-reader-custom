@@ -117,6 +117,33 @@ class BySavedSearch(private val database: Database) {
         return previous to next
     }
 
+    fun countBefore(
+        savedSearchID: String,
+        status: ArticleStatus,
+        sortOrder: SortOrder,
+        since: OffsetDateTime?,
+        articleID: String,
+        query: String? = null,
+    ): Long {
+        val (read, starred) = status.toStatusPair
+        val newestFirst = isNewestFirst(sortOrder)
+        val queries = database.articlesBySavedSearchQueries
+
+        val findCount =
+            if (newestFirst) queries::countBeforeNewestFirst else queries::countBeforeOldestFirst
+
+        return findCount(
+            articleID,
+            savedSearchID,
+            read,
+            mapLastRead(read, since),
+            starred,
+            mapLastUnstarred(starred, since),
+            null,
+            query,
+        ).executeAsOne()
+    }
+
     fun count(
         savedSearchID: String,
         status: ArticleStatus,

@@ -131,6 +131,7 @@ fun ArticleDetailScreen(
                 isAudioBuffering = isAudioBuffering,
                 isFullscreen = paneExpansion?.isFullscreen ?: false,
                 onToggleFullscreen = { paneExpansion?.toggleFullscreen() },
+                articlePosition = viewModel.articlePosition,
             )
 
             labelSheetArticleID?.let { id ->
