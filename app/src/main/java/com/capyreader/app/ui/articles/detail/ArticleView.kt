@@ -195,6 +195,13 @@ fun ArticleView(
                                         selectPrevious()
                                     }
                                 },
+                                onNavigateArticle = { direction ->
+                                    if (direction == PageDirection.FORWARD) {
+                                        selectNext()
+                                    } else {
+                                        selectPrevious()
+                                    }
+                                },
                                 openAtEnd = targetArticle.id == openAtEnd,
                                 onOpenedAtEnd = { openAtEnd = null },
                                 onSelectMedia = onSelectMedia,

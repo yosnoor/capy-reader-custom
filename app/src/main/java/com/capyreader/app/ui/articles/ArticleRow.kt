@@ -184,7 +184,7 @@ fun ArticleRow(
                                     contentDescription = null,
                                     tint = feedNameColor,
                                     modifier = Modifier
-                                        .width(16.dp.relative(options.fontScale))
+                                        .width(32.dp.relative(options.fontScale))
                                         .padding(end = 2.dp)
                                 )
                             }
@@ -308,7 +308,7 @@ fun PlaceholderArticleRow(imagePreview: ImagePreview = ImagePreview.NONE) {
         leadingContent = {
             Box(
                 Modifier
-                    .size(16.dp)
+                    .size(32.dp)
                     .clip(RoundedCornerShape(2.dp))
                     .background(colorScheme.surfaceContainer)
             )

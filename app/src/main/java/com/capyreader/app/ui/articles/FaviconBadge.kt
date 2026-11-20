@@ -23,7 +23,7 @@ import com.jocmp.capy.logging.CapyLog
 @Composable
 fun FaviconBadge(
     url: String?,
-    size: Dp = 16.dp
+    size: Dp = 32.dp
 ) {
     val placeholder = painterResource(id = R.drawable.favicon_badge_placeholder)
 

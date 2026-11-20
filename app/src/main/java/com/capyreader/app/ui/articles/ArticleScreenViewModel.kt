@@ -36,7 +36,6 @@ import com.jocmp.capy.articles.ArticleContent
 import com.jocmp.capy.articles.SidebarItem
 import com.jocmp.capy.common.UnauthorizedError
 import com.jocmp.capy.common.launchIO
-import com.jocmp.capy.common.launchUI
 import com.jocmp.capy.common.withIOContext
 import com.jocmp.capy.common.withUIContext
 import com.jocmp.capy.countToday
@@ -321,6 +320,15 @@ class ArticleScreenViewModel(
         _searchQuery,
     ) { filter, query ->
         account.countUnread(filter = filter, query = query)
+    }.flatMapLatest {
+        it
+    }
+
+    val count: Flow<Long> = combine(
+        filter,
+        _searchQuery,
+    ) { filter, query ->
+        account.countArticles(filter = filter, query = query)
     }.flatMapLatest {
         it
     }

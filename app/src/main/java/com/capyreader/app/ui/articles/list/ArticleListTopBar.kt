@@ -37,6 +37,7 @@ fun ArticleListTopBar(
     savedSearches: List<SavedSearch>,
     folders: List<Folder>,
     source: Source,
+    count: Long? = null,
 ) {
     // Search runs in its own full-surface overlay (see SearchView), so the list top bar only needs
     // to launch it; the active-search field/back-arrow used to live here.
@@ -49,6 +50,7 @@ fun ArticleListTopBar(
                 allFeeds = feeds,
                 allFolders = folders,
                 allSavedSearches = savedSearches,
+                count = count,
                 onRequestJumpToTop = onRequestJumpToTop
             )
         },
@@ -92,5 +94,6 @@ private fun FeedListTopBarPreview() {
         savedSearches = emptyList(),
         folders = emptyList(),
         source = Source.LOCAL,
+        count = 42L,
     )
 }

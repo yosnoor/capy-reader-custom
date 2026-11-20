@@ -69,10 +69,13 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("${project.rootDir}/release.keystore")
-            storePassword = secrets.getProperty("store_password")
-            keyAlias = secrets.getProperty("key_alias")
-            keyPassword = secrets.getProperty("key_password")
+            val keystoreFile = file("${project.rootDir}/release.keystore")
+            if (keystoreFile.exists()) {
+                storeFile = keystoreFile
+                storePassword = secrets.getProperty("store_password")
+                keyAlias = secrets.getProperty("key_alias")
+                keyPassword = secrets.getProperty("key_password")
+            }
         }
 
         getByName("debug") {
@@ -86,9 +89,12 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
-            signingConfig = signingConfigs.getByName("release")
+            val releaseSigning = signingConfigs.getByName("release")
+            if (releaseSigning.storeFile?.exists() == true) {
+                signingConfig = releaseSigning
+            }
         }
         debug {
             applicationIdSuffix = ".debug"
@@ -117,6 +123,7 @@ android {
 }
 
 dependencies {
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.adaptive)
     implementation(libs.androidx.adaptive.layout)
@@ -168,7 +175,6 @@ dependencies {
     implementation(libs.sqldelight.androidx.paging.extensions)
     implementation(libs.zoomable)
     implementation(libs.zoomable.image.coil)
-    implementation(platform(libs.androidx.compose.bom))
     implementation(project(":capy"))
     implementation(project(":feedfinder"))
     implementation(libs.androidx.glance.appwidget)
@@ -184,7 +190,6 @@ dependencies {
     testImplementation(libs.tests.work.testing)
     androidTestImplementation(libs.tests.androidx.test.ext)
     androidTestImplementation(libs.tests.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.tests.androidx.ui.junit4)
     androidTestImplementation(libs.tests.androidx.uiautomator)
     androidTestImplementation(libs.mockwebserver3)

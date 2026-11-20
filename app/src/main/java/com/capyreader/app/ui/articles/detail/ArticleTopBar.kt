@@ -43,11 +43,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.capyreader.app.R
 import com.capyreader.app.ui.articles.DeletePageDialog
+import com.capyreader.app.ui.articles.FilterAppBarTitle
 import com.capyreader.app.ui.articles.LocalArticleActions
 import com.capyreader.app.ui.articles.LocalLabelsActions
 import com.capyreader.app.ui.components.ToolbarTooltip
 import com.capyreader.app.ui.fixtures.PreviewKoinApplication
 import com.capyreader.app.ui.components.LocalSnackbarHost
+import com.jocmp.capy.ArticleFilter
+import com.jocmp.capy.Feed
+import com.jocmp.capy.Folder
+import com.jocmp.capy.SavedSearch
 import kotlinx.coroutines.launch
 
 private val sizeSpec = spring<IntSize>(stiffness = 700f)
@@ -64,6 +69,11 @@ fun ArticleTopBar(
     isFullscreen: Boolean = false,
     onToggleFullscreen: () -> Unit = {},
     onClose: () -> Unit,
+    filter: ArticleFilter = ArticleFilter.default(),
+    allFeeds: List<Feed> = emptyList(),
+    allFolders: List<Folder> = emptyList(),
+    allSavedSearches: List<SavedSearch> = emptyList(),
+    count: Long? = null,
 ) {
     val containerColor = MaterialTheme.colorScheme.surface
     val labelsActions = LocalLabelsActions.current
@@ -101,7 +111,16 @@ fun ArticleTopBar(
                             onClose = onClose,
                         )
                     },
-                    title = {},
+                    title = {
+                        FilterAppBarTitle(
+                            filter = filter,
+                            allFeeds = allFeeds,
+                            allFolders = allFolders,
+                            allSavedSearches = allSavedSearches,
+                            count = count,
+                            onRequestJumpToTop = {},
+                        )
+                    },
                     actions = {
                         if (canSaveExternally) {
                             val articleActions = LocalArticleActions.current

@@ -40,6 +40,7 @@ fun PageTurnGestures(
     onHideToolbars: () -> Unit,
     onToggleToolbars: () -> Unit,
     onTurnPastArticle: (PageDirection) -> Unit,
+    onNavigateArticle: (PageDirection) -> Unit = onTurnPastArticle,
     appPreferences: AppPreferences = koinInject(),
     content: @Composable () -> Unit,
 ) {
@@ -51,6 +52,7 @@ fun PageTurnGestures(
     val currentOnHideToolbars by rememberUpdatedState(onHideToolbars)
     val currentEnableTaps by rememberUpdatedState(enableTaps)
     val currentOnTurnPastArticle by rememberUpdatedState(onTurnPastArticle)
+    val currentOnNavigateArticle by rememberUpdatedState(onNavigateArticle)
     val scope = rememberCoroutineScope()
     val keys = LocalPageTurnKeys.current
 
@@ -100,12 +102,14 @@ fun PageTurnGestures(
         }
     }
 
-    DisposableEffect(keys, enableKeys, turn) {
+    DisposableEffect(keys, enableKeys) {
         if (!enableKeys) {
             return@DisposableEffect onDispose {}
         }
 
-        val unregister = keys.register(turn)
+        val unregister = keys.register { direction ->
+            currentOnNavigateArticle(direction)
+        }
 
         onDispose { unregister() }
     }

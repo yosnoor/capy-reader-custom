@@ -392,6 +392,16 @@ data class Account(
         )
     }
 
+    fun countArticles(
+        filter: ArticleFilter,
+        query: String?,
+    ): Flow<Long> {
+        return articleRecords.countUnread(
+            filter = filter,
+            query = query,
+        )
+    }
+
     suspend fun markAllRead(
         articleIDs: List<String>,
         lastReadAt: ZonedDateTime = nowUTC(),

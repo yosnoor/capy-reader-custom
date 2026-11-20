@@ -19,12 +19,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
 import com.capyreader.app.R
@@ -49,7 +47,6 @@ import com.capyreader.app.ui.articles.reader.RestoreReadingPositionEffect
 import com.capyreader.app.ui.articles.reader.galleryItems
 import com.capyreader.app.ui.articles.reader.largestSource
 import com.capyreader.app.ui.articles.reader.rememberReaderStyle
-import com.capyreader.app.ui.collectChangesWithCurrent
 import com.capyreader.app.ui.components.LocalSnackbarHost
 import com.capyreader.app.ui.components.rememberSaveableShareLink
 import com.jocmp.capy.Article
@@ -70,6 +67,7 @@ fun ArticleReader(
     onHideToolbars: () -> Unit,
     onToggleToolbars: () -> Unit,
     onTurnPastArticle: (PageDirection) -> Unit,
+    onNavigateArticle: (PageDirection) -> Unit = onTurnPastArticle,
     openAtEnd: Boolean,
     onOpenedAtEnd: () -> Unit,
     onSelectMedia: (media: Media) -> Unit,
@@ -221,6 +219,7 @@ fun ArticleReader(
             onHideToolbars = onHideToolbars,
             onToggleToolbars = onToggleToolbars,
             onTurnPastArticle = onTurnPastArticle,
+            onNavigateArticle = onNavigateArticle,
             onContentPositioned = {
                 anchors.contentCoordinates = it
             },
@@ -269,6 +268,7 @@ private fun ScrollableArticle(
     onHideToolbars: () -> Unit,
     onToggleToolbars: () -> Unit,
     onTurnPastArticle: (PageDirection) -> Unit,
+    onNavigateArticle: (PageDirection) -> Unit = onTurnPastArticle,
     onContentPositioned: (coordinates: androidx.compose.ui.layout.LayoutCoordinates) -> Unit,
     content: @Composable () -> Unit,
 ) {
@@ -279,6 +279,7 @@ private fun ScrollableArticle(
         onHideToolbars = onHideToolbars,
         onToggleToolbars = onToggleToolbars,
         onTurnPastArticle = onTurnPastArticle,
+        onNavigateArticle = onNavigateArticle,
     ) {
         BoxWithConstraints {
             val pageHeight = maxHeight - WindowInsets.statusBars.asPaddingValues().calculateTopPadding()

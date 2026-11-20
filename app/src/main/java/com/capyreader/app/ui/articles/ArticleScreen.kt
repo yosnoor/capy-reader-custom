@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,7 +44,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
@@ -102,16 +100,16 @@ import com.jocmp.capy.common.launchIO
 import com.jocmp.capy.common.launchUI
 import com.jocmp.capy.logging.CapyLog
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class, FlowPreview::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ArticleScreen(
     onSelectArticle: (articleID: String, searchQuery: String?) -> Unit,
@@ -132,6 +130,7 @@ fun ArticleScreen(
     val statusCount by viewModel.statusCount.collectAsStateWithLifecycle(initialValue = 0)
     val todayCount by viewModel.todayCount.collectAsStateWithLifecycle(initialValue = 0)
     val unreadCount by viewModel.unreadCount.collectAsStateWithLifecycle(initialValue = 0L)
+    val count by viewModel.count.collectAsStateWithLifecycle(initialValue = 0L)
     val filter by viewModel.filter.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle("")
     val searchState by viewModel.searchState.collectAsStateWithLifecycle(SearchState.INACTIVE)
@@ -265,10 +264,12 @@ fun ArticleScreen(
             }
         }
 
+        val mobileSkipMessage = stringResource(R.string.refresh_skipped_mobile)
+
         LaunchedEffect(viewModel.refreshSkipReason) {
             val reason = viewModel.refreshSkipReason ?: return@LaunchedEffect
             val message = when (reason) {
-                RefreshSkipReason.Mobile -> context.getString(R.string.refresh_skipped_mobile)
+                RefreshSkipReason.Mobile -> mobileSkipMessage
             }
             snackbarHostState.showSnackbar(
                 message = message,
@@ -555,6 +556,7 @@ fun ArticleScreen(
                                 savedSearches = savedSearches,
                                 folders = allFolders,
                                 source = viewModel.source,
+                                count = count,
                             )
                         },
                         snackbarHost = {
@@ -858,6 +860,7 @@ private fun rememberInitialLoad(items: LazyPagingItems<*>): Boolean {
     return loaded
 }
 
+@OptIn(FlowPreview::class)
 @Composable
 private fun MarkReadOnScrollEffect(
     listState: LazyListState,
@@ -906,7 +909,7 @@ private fun MarkReadOnScrollEffect(
                 listState.firstVisibleItemIndex - 1
             }
                 .distinctUntilChanged()
-                .debounce(500)
+                .debounce(500.milliseconds)
                 .collect { scrolledPastIndex ->
                     CapyLog.debug(
                         "mark_read_on_scroll:collect", mapOf(

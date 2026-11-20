@@ -24,11 +24,11 @@ import com.capyreader.app.ui.theme.CapyTheme
 @Composable
 fun ArticleListItem(
     headlineContent: @Composable () -> Unit,
-    overlineContent: @Composable() (() -> Unit)? = null,
-    supportingContent: @Composable() (() -> Unit)? = null,
-    leadingContent: @Composable() (() -> Unit)? = null,
-    trailingContent: @Composable() (() -> Unit)? = null,
-    colors: ListItemColors = ListItemDefaults.colors()
+    overlineContent: (@Composable () -> Unit)? = null,
+    supportingContent: (@Composable () -> Unit)? = null,
+    leadingContent: (@Composable () -> Unit)? = null,
+    trailingContent: (@Composable () -> Unit)? = null,
+    colors: ListItemColors = ListItemDefaults.colors(),
 ) {
     Surface(
         color = colors.containerColor,

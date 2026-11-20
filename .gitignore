@@ -37,6 +37,7 @@ release.keystore
 # Build
 vendor/
 app/gplay/release/
+app/free/release/
 
 # Cruft
 technotes/.obsidian/
@@ -44,6 +45,7 @@ technotes/.obsidian/
 .idea/runConfigurations.xml
 .idea/markdown.xml
 .kotlin/sessions/
+.idea/
 
 TODO.md
 
